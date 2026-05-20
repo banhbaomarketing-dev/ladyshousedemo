@@ -906,14 +906,322 @@
       .ai-grid, .analysis-summary, .recommend-grid, .simple-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
-      .app { width: 100%; min-height: 100vh; margin: 0; border: 0; border-radius: 0; }
-      main, .topbar { padding-left: 16px; padding-right: 16px; }
-      .welcome { flex-direction: column; }
-      .nav, .quick-grid { grid-template-columns: 1fr; }
-      .customer-item, .appointment-item { align-items: flex-start; }
-      .profile-btn { display: none; }
-      .manager div { display: none; }
-      h1 { font-size: 27px; }
+      body { background: #fff; }
+      .app {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        display: block;
+        overflow: visible;
+      }
+      .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: block;
+        padding: 10px 12px 8px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255,255,255,.96);
+        backdrop-filter: blur(12px);
+      }
+      .logo-wrap {
+        min-height: 56px;
+        margin: 0;
+        justify-items: start;
+      }
+      .brand-logo {
+        width: 142px;
+        height: 54px;
+      }
+      .nav {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 8px 0 2px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .nav::-webkit-scrollbar { display: none; }
+      .nav button {
+        flex: 0 0 auto;
+        min-height: 42px;
+        width: auto;
+        padding: 8px 12px;
+        gap: 8px;
+        border: 1px solid #f2d8e3;
+        border-radius: 999px;
+        background: #fff;
+        font-size: 13px;
+        scroll-snap-align: start;
+      }
+      .nav button .icon {
+        width: 22px;
+        height: 22px;
+        flex-basis: 22px;
+      }
+      .nav button .icon svg {
+        width: 18px;
+        height: 18px;
+      }
+      .nav button .badge { display: none; }
+      .sidebar-bottom { display: none; }
+      .content { min-height: auto; }
+      .topbar {
+        min-height: auto;
+        padding: 12px 14px;
+        gap: 10px;
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .topbar-left {
+        width: 100%;
+        gap: 10px;
+      }
+      .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .menu-btn {
+        display: none;
+      }
+      .search {
+        width: 100%;
+      }
+      .search input {
+        height: 46px;
+        border-radius: 14px;
+        font-size: 14px;
+      }
+      .round-btn, .alert-btn {
+        width: 42px;
+        height: 42px;
+        border: 1px solid #f0e4ea;
+      }
+      .plus-btn {
+        border: 0;
+      }
+      .manager {
+        margin-left: auto;
+        gap: 8px;
+      }
+      .manager img, .avatar {
+        width: 42px;
+        height: 42px;
+      }
+      .manager div, .manager .chevron { display: none; }
+      main {
+        padding: 18px 14px 104px;
+      }
+      .welcome {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        font-size: 26px;
+        line-height: 1.18;
+      }
+      .welcome p {
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .date-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .dashboard-grid, .two-cols, .lower-cols, .kpis, .workflow, .quick-grid, .analysis-summary, .recommend-grid, .simple-grid, .ai-grid {
+        grid-template-columns: 1fr;
+      }
+      .stack, .dashboard-grid {
+        gap: 14px;
+      }
+      .card {
+        padding: 16px;
+        border-radius: 16px;
+      }
+      .kpi-card {
+        min-height: auto;
+      }
+      .kpi-main {
+        gap: 12px;
+      }
+      .kpi-icon {
+        width: 54px;
+        height: 54px;
+        flex-basis: 54px;
+      }
+      .kpi-value {
+        font-size: 28px;
+      }
+      .change {
+        margin-top: 14px;
+        font-size: 13px;
+      }
+      .donut-wrap {
+        align-items: center;
+      }
+      .donut {
+        width: 210px;
+        height: 210px;
+        flex-basis: 210px;
+      }
+      .legend {
+        width: 100%;
+        gap: 12px;
+      }
+      .legend-row {
+        font-size: 13px;
+      }
+      .customer-item, .appointment-item {
+        align-items: center;
+        gap: 10px;
+      }
+      .profile-btn {
+        display: none;
+      }
+      .appointments {
+        position: static;
+      }
+      .time {
+        min-width: 66px;
+        padding: 8px 6px;
+      }
+      .quick-action {
+        min-height: 86px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 12px;
+        text-align: left;
+      }
+      .quick-action .qa-icon {
+        margin: 0;
+        flex: 0 0 42px;
+      }
+      .quick-action span:last-child {
+        white-space: normal;
+      }
+      .workflow-step:not(:last-child)::after {
+        display: none;
+      }
+      .workflow-step {
+        display: grid;
+        grid-template-columns: 58px 32px 1fr;
+        align-items: center;
+        gap: 10px;
+        text-align: left;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1e5eb;
+      }
+      .workflow-step:last-child {
+        border-bottom: 0;
+      }
+      .wf-icon {
+        width: 52px;
+        height: 52px;
+        margin: 0;
+      }
+      .wf-num {
+        margin: 0;
+      }
+      .wf-title, .wf-desc {
+        grid-column: 3;
+      }
+      .wf-title {
+        grid-row: 1;
+      }
+      .wf-desc {
+        grid-row: 2;
+      }
+      .module-head {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .module-head p {
+        font-size: 14px;
+      }
+      .upload-area {
+        min-height: 210px;
+      }
+      .upload-area img {
+        height: 240px;
+      }
+      .row {
+        gap: 8px;
+      }
+      .primary-btn, .secondary-btn {
+        width: 100%;
+      }
+      .routine-row {
+        display: block;
+      }
+      .routine-row b {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .data-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      footer {
+        padding: 0 14px 92px;
+        font-size: 12px;
+      }
+      .mobile-tabbar {
+        display: grid;
+      }
+    }
+
+    .mobile-tabbar { display: none; }
+    @media (max-width: 640px) {
+      .mobile-tabbar {
+        display: grid;
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        z-index: 40;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+        padding: 8px;
+        border: 1px solid #efdce5;
+        border-radius: 20px;
+        background: rgba(255,255,255,.94);
+        box-shadow: 0 18px 45px rgba(31,24,29,.16);
+        backdrop-filter: blur(14px);
+      }
+      .mobile-tabbar button {
+        display: grid;
+        place-items: center;
+        gap: 3px;
+        min-height: 54px;
+        border: 0;
+        border-radius: 14px;
+        color: #746b74;
+        background: transparent;
+        font-size: 10px;
+        font-weight: 800;
+      }
+      .mobile-tabbar button.active {
+        color: var(--pink);
+        background: #fde8f1;
+      }
+      .mobile-tabbar svg {
+        width: 21px;
+        height: 21px;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
     }
   </style>
 </head>
@@ -1044,6 +1352,7 @@
       <footer>Lady's House - AI Skin Assistant & Customer Care System <span>♥</span></footer>
     </section>
   </div>
+  <nav id="mobileTabbar" class="mobile-tabbar" aria-label="Điều hướng nhanh trên điện thoại"></nav>
 
   <script>
     const customers = [
@@ -1204,6 +1513,22 @@
           <span class="icon">${iconSvg(icon)}</span>
           <span style="flex:1">${label}</span>
           ${tag ? badge(tag) : ""}
+        </button>
+      `).join("");
+    }
+
+    function renderMobileTabbar() {
+      const mobileTabs = [
+        ["Tổng quan", "home", "Home"],
+        ["Khách hàng", "users", "Khách"],
+        ["Phân tích da (AI)", "bot", "AI"],
+        ["Liệu trình & Sản phẩm", "clipboard", "Phác đồ"],
+        ["Lịch hẹn", "calendar", "Lịch"]
+      ];
+      document.getElementById("mobileTabbar").innerHTML = mobileTabs.map(([label, icon, shortLabel]) => `
+        <button class="${active === label ? "active" : ""}" data-nav="${label}">
+          ${iconSvg(icon)}
+          <span>${shortLabel}</span>
         </button>
       `).join("");
     }
@@ -1493,6 +1818,7 @@
       document.getElementById("messageIconButton").innerHTML = `${iconSvg("message")}<span class="dot">3</span>`;
       document.getElementById("dateIcon").innerHTML = iconSvg("calendar");
       renderNav();
+      renderMobileTabbar();
       renderKpis();
       renderSkinLegend();
       renderCustomers();
