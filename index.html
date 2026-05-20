@@ -1,0 +1,1608 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lady's House - AI Skin Assistant</title>
+  <style>
+    :root {
+      --bg: #fbfbfc;
+      --paper: #ffffff;
+      --ink: #18151a;
+      --muted: #6d6670;
+      --line: #ebe7ea;
+      --soft: #fff4f8;
+      --pink: #ef2f7f;
+      --pink-2: #d91d6b;
+      --purple: #8b5cf6;
+      --green: #36bf7d;
+      --orange: #fb923c;
+      --shadow: 0 18px 50px rgba(31, 24, 29, .055);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    img { display: block; max-width: 100%; }
+
+    .app {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--paper);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, .05);
+    }
+
+    .sidebar {
+      display: flex;
+      flex: 0 0 290px;
+      flex-direction: column;
+      padding: 32px 22px 24px;
+      border-right: 1px solid var(--line);
+      background: #fff;
+    }
+    .logo-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 135px;
+      margin-bottom: 20px;
+    }
+    .brand-logo {
+      width: 218px;
+      height: 124px;
+      object-fit: contain;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+    .nav button {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      width: 100%;
+      min-height: 56px;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 12px;
+      color: #5d5661;
+      background: transparent;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 700;
+      transition: .18s ease;
+    }
+    .nav button:hover, .nav button.active {
+      color: var(--pink);
+      background: #fde8f1;
+    }
+    .icon {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: var(--radius);
+      color: currentColor;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+    .icon svg, .kpi-icon svg, .qa-icon svg, .wf-icon svg, .menu-btn svg, .alert-btn svg, .search svg, .date-btn svg, .create-btn svg, .primary-btn svg, .secondary-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 3px 9px;
+      border: 1px solid #ff9cc2;
+      border-radius: 999px;
+      color: var(--pink);
+      background: #fff4f8;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .sidebar-bottom {
+      display: grid;
+      gap: 14px;
+      margin-top: auto;
+      padding-top: 24px;
+    }
+    .premium, .branch {
+      border: 1px solid #ffd2e3;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff, #fff2f7);
+      padding: 18px;
+      text-align: center;
+    }
+    .premium .gem {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 10px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--pink-2));
+      font-weight: 900;
+    }
+    .premium b, .branch b { display: block; }
+    .premium p, .branch p, .copyright {
+      margin: 4px 0 0;
+      color: #777078;
+      font-size: 13px;
+    }
+    .outline-btn {
+      min-height: 40px;
+      width: 100%;
+      margin-top: 14px;
+      border: 1px solid #ff9cc2;
+      border-radius: 12px;
+      color: var(--pink);
+      background: #fff;
+      font-weight: 800;
+    }
+    .branch {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-color: var(--line);
+      background: #fff;
+      text-align: left;
+      box-shadow: 0 10px 24px rgba(31, 24, 29, .035);
+    }
+    .branch-mark {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.35), rgba(255,255,255,.05)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23fff4f8'/%3E%3Crect x='8' y='52' width='80' height='36' rx='6' fill='%23f5d7e1'/%3E%3Crect x='16' y='20' width='28' height='28' rx='4' fill='%23ffffff'/%3E%3Crect x='52' y='18' width='28' height='31' rx='4' fill='%23ffffff'/%3E%3Cpath d='M12 56h72' stroke='%23ef2f7f' stroke-opacity='.35' stroke-width='3'/%3E%3Ccircle cx='72' cy='64' r='8' fill='%23ef2f7f' fill-opacity='.25'/%3E%3C/svg%3E");
+      background-size: cover;
+    }
+    .copyright { line-height: 1.5; }
+
+    .content {
+      display: flex;
+      min-width: 0;
+      flex: 1;
+      flex-direction: column;
+      background: var(--bg);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 96px;
+      padding: 18px 36px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .topbar-left, .topbar-right, .manager, .row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .menu-btn, .round-btn, .alert-btn {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border: 0;
+      border-radius: 12px;
+      background: #fff;
+      color: #2f2931;
+      font-weight: 900;
+    }
+    .plus-btn {
+      color: #fff;
+      background: linear-gradient(135deg, #f33b88, #d91d6b);
+      box-shadow: 0 10px 24px rgba(239, 47, 127, .22);
+    }
+    .search {
+      position: relative;
+      width: min(575px, 44vw);
+    }
+    .search input {
+      width: 100%;
+      height: 52px;
+      padding: 0 48px 0 20px;
+      border: 1px solid #e9e0e5;
+      border-radius: 15px;
+      background: #fff;
+      outline: none;
+    }
+    .search input:focus {
+      border-color: #ff9cc2;
+      box-shadow: 0 0 0 4px rgba(239, 47, 127, .09);
+    }
+    .search span {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7c737d;
+      font-weight: 900;
+    }
+    .alert-btn { position: relative; }
+    .alert-btn .dot {
+      position: absolute;
+      right: -3px;
+      top: -3px;
+      min-width: 19px;
+      height: 19px;
+      padding: 0 5px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--pink);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 19px;
+    }
+    .manager img, .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #f8bfd2, #f2ecff);
+    }
+    .manager b { display: block; }
+    .manager small { color: #777078; }
+    .chevron {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg) translateY(-2px);
+      opacity: .8;
+    }
+
+    main {
+      flex: 1;
+      padding: 34px 38px 20px;
+    }
+    .welcome {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    h1 span { color: var(--pink); }
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+    p { margin-top: 0; }
+    .welcome p {
+      margin: 8px 0 0;
+      color: #635c66;
+    }
+    .date-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid #eee1e7;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .035);
+      color: #342d36;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 22px;
+      align-items: start;
+    }
+    .stack { display: grid; gap: 22px; }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      border: 1px solid #eee4e9;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .kpi-card {
+      min-height: 168px;
+      border-radius: 18px;
+    }
+    .kpi-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .kpi-icon {
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      flex: 0 0 64px;
+      border-radius: 999px;
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .kpi-icon svg {
+      width: 30px;
+      height: 30px;
+    }
+    .tone-pink { color: var(--pink); background: #ffeaf2; }
+    .tone-purple { color: var(--purple); background: #f2ecff; }
+    .tone-green { color: var(--green); background: #e9fbf2; }
+    .tone-orange { color: var(--orange); background: #fff0df; }
+    .kpi-value { font-size: 31px; font-weight: 900; line-height: 1; }
+    .kpi-label { margin-top: 6px; color: #3d3740; font-size: 14px; font-weight: 700; }
+    .change {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 22px;
+      color: #7b7480;
+      font-size: 14px;
+    }
+    .change b {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .lower-cols {
+      display: grid;
+      grid-template-columns: 1.1fr 1.45fr;
+      gap: 18px;
+    }
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .text-link {
+      border: 0;
+      background: transparent;
+      color: var(--pink);
+      font-weight: 800;
+    }
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .donut {
+      position: relative;
+      width: 230px;
+      height: 230px;
+      flex: 0 0 230px;
+      border-radius: 999px;
+      background: conic-gradient(#ef2f7f 0 27%, #f56fa6 27% 49%, #f6a1bf 49% 68%, #f8bfd2 68% 84%, #d5aceb 84% 93%, #c6a5e9 93% 100%);
+    }
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 58px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: inset 0 0 18px rgba(0, 0, 0, .04);
+    }
+    .donut-center {
+      position: absolute;
+      inset: 58px;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      color: #56505a;
+      font-size: 14px;
+    }
+    .donut-center b {
+      color: #000;
+      font-size: 34px;
+      line-height: 1.05;
+    }
+    .legend {
+      display: grid;
+      flex: 1;
+      gap: 16px;
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: #312c33;
+      font-size: 14px;
+    }
+    .legend-row span:first-child {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .swatch {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      flex: 0 0 11px;
+    }
+
+    .customer-list, .appointment-list, .quick-grid, .workflow {
+      display: grid;
+      gap: 16px;
+    }
+    .customer-item, .appointment-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .customer-item b, .appointment-item b { display: block; }
+    .customer-item small, .appointment-item small {
+      color: #645d66;
+      font-size: 13px;
+    }
+    .profile-btn {
+      min-height: 40px;
+      padding: 8px 13px;
+      border: 1px solid #ffd0df;
+      border-radius: 12px;
+      color: var(--pink);
+      background: #fff9fb;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .quick-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .quick-action {
+      min-height: 112px;
+      padding: 14px 8px;
+      border: 1px solid #ffd8e7;
+      border-radius: 12px;
+      background: #fff7fa;
+      color: #2f2931;
+      text-align: center;
+      font-weight: 800;
+      transition: .18s ease;
+    }
+    .quick-action:hover {
+      transform: translateY(-2px);
+      background: #fff0f6;
+      box-shadow: 0 10px 24px rgba(239, 47, 127, .10);
+    }
+    .quick-action .qa-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 10px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+    .quick-action .qa-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+    .quick-action span:last-child {
+      white-space: pre-line;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .workflow {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .workflow-step {
+      position: relative;
+      text-align: center;
+      min-width: 0;
+    }
+    .workflow-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 58%;
+      top: 32px;
+      width: 78%;
+      height: 1px;
+      background: #e6dbe2;
+    }
+    .wf-icon {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto;
+      border: 1px solid #e7e2e6;
+      border-radius: 999px;
+      color: #7f7881;
+      background: #f8f7f8;
+      font-size: 22px;
+      font-weight: 900;
+    }
+    .wf-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+    .workflow-step:first-child .wf-icon {
+      color: var(--pink);
+      border-color: var(--pink);
+      background: #fff0f6;
+    }
+    .wf-num {
+      display: grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      margin: 10px auto 9px;
+      border-radius: 999px;
+      color: #464047;
+      background: #e8e5e7;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .workflow-step:first-child .wf-num {
+      color: #fff;
+      background: var(--pink);
+    }
+    .wf-title { font-size: 13px; font-weight: 900; }
+    .wf-desc {
+      margin-top: 5px;
+      color: #716a73;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .appointments {
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+    }
+    .appointment-item {
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0e8ed;
+    }
+    .appointment-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+    .time {
+      min-width: 76px;
+      padding: 10px 8px;
+      border-radius: 12px;
+      background: #fff1f6;
+      text-align: center;
+    }
+    .time b { font-size: 15px; }
+    .time small { font-size: 12px; }
+    .create-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 48px;
+      margin-top: 18px;
+      border: 1px solid #ffb7d0;
+      border-radius: 12px;
+      color: var(--pink);
+      background: #fff;
+      font-weight: 900;
+    }
+
+    footer {
+      padding: 0 30px 18px;
+      color: #8a838c;
+      text-align: center;
+      font-size: 14px;
+    }
+    footer span { color: var(--pink); }
+
+    .placeholder {
+      display: none;
+      min-height: 520px;
+      align-content: center;
+      justify-items: center;
+      border: 1px dashed #f0bfd2;
+      border-radius: 24px;
+      background: #fff;
+      text-align: center;
+      padding: 38px;
+    }
+    .placeholder.active { display: grid; }
+    .placeholder .big-icon {
+      display: grid;
+      place-items: center;
+      width: 74px;
+      height: 74px;
+      margin-bottom: 18px;
+      border-radius: 999px;
+      color: var(--pink);
+      background: #fff0f6;
+      font-size: 28px;
+      font-weight: 900;
+    }
+    .placeholder p {
+      max-width: 560px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .module-view { display: none; }
+    .module-view.active { display: block; animation: fadeIn .2s ease both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .module-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    .module-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .ai-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, .9fr) minmax(0, 1.35fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .field label {
+      color: #443c45;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .field select, .field textarea {
+      width: 100%;
+      border: 1px solid #eadde5;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      font: inherit;
+    }
+    .field select { height: 44px; padding: 0 12px; }
+    .field textarea {
+      min-height: 94px;
+      padding: 12px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .upload-area {
+      display: grid;
+      place-items: center;
+      min-height: 260px;
+      border: 2px dashed #ffc6da;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff, #fff7fa);
+      color: #7e727c;
+      text-align: center;
+      overflow: hidden;
+    }
+    .upload-area.has-image { border-style: solid; background: #111; }
+    .upload-area img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+    }
+    .upload-copy {
+      padding: 26px;
+    }
+    .upload-copy .big-plus {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 12px;
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--pink-2));
+      font-size: 28px;
+      font-weight: 900;
+    }
+    .primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--pink), var(--pink-2));
+      font-weight: 900;
+      box-shadow: 0 12px 24px rgba(239, 47, 127, .18);
+    }
+    .secondary-btn {
+      min-height: 42px;
+      padding: 9px 13px;
+      border: 1px solid #ffd0df;
+      border-radius: 12px;
+      color: var(--pink);
+      background: #fff9fb;
+      font-weight: 900;
+    }
+    .analysis-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .summary-box {
+      min-height: 108px;
+      padding: 14px;
+      border: 1px solid #f3d8e3;
+      border-radius: 16px;
+      background: #fff7fa;
+    }
+    .summary-box small {
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .summary-box b {
+      display: block;
+      margin-top: 8px;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .product-card {
+      border: 1px solid #f3d8e3;
+      border-radius: 16px;
+      background: #fff;
+      padding: 16px;
+    }
+    .product-card .product-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .product-card h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+    .product-card p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .routine-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .routine-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 13px;
+      border: 1px solid #f0dce5;
+      border-radius: 14px;
+      background: #fffafd;
+    }
+    .routine-row b {
+      min-width: 72px;
+      color: var(--pink);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+    .data-table th, .data-table td {
+      padding: 14px;
+      border-bottom: 1px solid #f1e5eb;
+      text-align: left;
+      font-size: 14px;
+    }
+    .data-table th {
+      color: #5c535d;
+      background: #fff4f8;
+    }
+    .simple-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    @media (max-width: 1320px) {
+      .app { width: 100%; }
+      .sidebar { flex-basis: 244px; }
+      .dashboard-grid, .lower-cols { grid-template-columns: 1fr; }
+      .appointments { position: static; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .search { width: min(420px, 38vw); }
+    }
+    @media (max-width: 980px) {
+      .app { display: block; }
+      .sidebar {
+        flex-basis: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .logo-wrap { min-height: 108px; margin-bottom: 14px; }
+      .brand-logo { width: 210px; height: 96px; }
+      .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sidebar-bottom { display: none; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .topbar-left, .topbar-right { width: 100%; justify-content: space-between; }
+      .search { width: 100%; }
+      .two-cols, .kpis, .workflow { grid-template-columns: 1fr; }
+      .workflow-step:not(:last-child)::after { display: none; }
+      .donut-wrap { flex-direction: column; align-items: flex-start; }
+      .ai-grid, .analysis-summary, .recommend-grid, .simple-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .app { width: 100%; min-height: 100vh; margin: 0; border: 0; border-radius: 0; }
+      main, .topbar { padding-left: 16px; padding-right: 16px; }
+      .welcome { flex-direction: column; }
+      .nav, .quick-grid { grid-template-columns: 1fr; }
+      .customer-item, .appointment-item { align-items: flex-start; }
+      .profile-btn { display: none; }
+      .manager div { display: none; }
+      h1 { font-size: 27px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo-wrap">
+        <img class="brand-logo" src="assets/lady-house-logo-cropped.png" alt="Lady's House" />
+      </div>
+      <nav id="nav" class="nav" aria-label="Menu chính"></nav>
+      <div class="sidebar-bottom">
+        <section class="premium">
+          <div class="gem">G</div>
+          <b>Gói Premium</b>
+          <p>Còn 356 ngày</p>
+          <button class="outline-btn">Nâng cấp gói</button>
+        </section>
+        <section class="branch">
+          <div class="branch-mark"></div>
+          <div style="min-width:0;flex:1">
+            <b>Lady's House</b>
+            <p>Chi nhánh Hà Nội</p>
+          </div>
+          <span class="chevron" aria-hidden="true"></span>
+        </section>
+        <p class="copyright">© 2024 Lady's House.<br />All rights reserved.</p>
+      </div>
+    </aside>
+
+    <section class="content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" aria-label="Mở menu" id="menuIconButton"></button>
+          <label class="search">
+            <input id="searchInput" placeholder="Tìm khách hàng, SĐT, liệu trình, sản phẩm..." />
+            <span id="searchIcon"></span>
+          </label>
+        </div>
+        <div class="topbar-right">
+          <button class="round-btn plus-btn" aria-label="Thêm mới">+</button>
+          <button class="alert-btn" aria-label="Thông báo" id="bellIconButton"><span class="dot">8</span></button>
+          <button class="alert-btn" aria-label="Tin nhắn" id="messageIconButton"><span class="dot">3</span></button>
+          <div class="manager">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=300&auto=format&fit=crop" alt="Quản lý chi nhánh" />
+            <div>
+              <b>Linh Trần</b>
+              <small>Quản lý chi nhánh</small>
+            </div>
+            <span class="chevron" aria-hidden="true"></span>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="overviewView">
+          <div class="welcome">
+            <div>
+              <h1>Chào mừng, <span>Bánh Bao!</span></h1>
+              <p>Đây là tổng quan hoạt động của phòng khám hôm nay.</p>
+            </div>
+            <button class="date-btn"><span id="dateIcon"></span> Thứ 6, 24/05/2024 <span class="chevron" aria-hidden="true"></span></button>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="stack">
+              <section id="kpis" class="kpis"></section>
+
+              <div class="two-cols">
+                <section class="card">
+                  <div class="card-head">
+                    <h2>Tình trạng da phổ biến</h2>
+                  </div>
+                  <div class="donut-wrap">
+                    <div class="donut" aria-label="Biểu đồ donut tình trạng da">
+                      <div class="donut-center"><span>Tổng</span><b>128</b><span>khách</span></div>
+                    </div>
+                    <div id="skinLegend" class="legend"></div>
+                  </div>
+                </section>
+
+                <section class="card">
+                  <div class="card-head">
+                    <h2>Khách hàng mới</h2>
+                    <button class="text-link">Xem tất cả</button>
+                  </div>
+                  <div id="customerList" class="customer-list"></div>
+                </section>
+              </div>
+
+              <div class="lower-cols">
+                <section class="card">
+                  <div class="card-head">
+                    <h2>Truy cập nhanh</h2>
+                  </div>
+                  <div id="quickActions" class="quick-grid"></div>
+                </section>
+
+                <section class="card">
+                  <div class="card-head">
+                    <h2>Quy trình vận hành</h2>
+                    <button class="text-link" data-nav-target="Quy trình vận hành">Xem chi tiết</button>
+                  </div>
+                  <div id="workflow" class="workflow"></div>
+                </section>
+              </div>
+            </div>
+
+            <aside class="card appointments">
+              <div class="card-head">
+                <h2>Lịch hẹn sắp tới</h2>
+                <button class="text-link" data-nav-target="Lịch hẹn">Xem lịch đầy đủ</button>
+              </div>
+              <div id="appointments" class="appointment-list"></div>
+              <button class="create-btn">+ Tạo lịch hẹn mới</button>
+            </aside>
+          </div>
+        </section>
+
+        <section id="moduleView" class="module-view"></section>
+
+        <section id="placeholderView" class="placeholder">
+          <div class="big-icon" id="placeholderIcon">H</div>
+          <h1 id="placeholderTitle">Khách hàng</h1>
+          <p id="placeholderText">Module này đang được mô phỏng trong prototype. Menu vẫn hoạt động để Ban Giám đốc hình dung cấu trúc sản phẩm tổng thể.</p>
+        </section>
+      </main>
+
+      <footer>Lady's House - AI Skin Assistant & Customer Care System <span>♥</span></footer>
+    </section>
+  </div>
+
+  <script>
+    const customers = [
+      { name: "Nguyễn Thanh Huyền", age: 24, phone: "0901 234 567", service: "Tái khám mụn", time: "09:00", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&auto=format&fit=crop" },
+      { name: "Trần Mai Phương", age: 29, phone: "0932 111 222", service: "Liệu trình nám", time: "10:30", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=300&auto=format&fit=crop" },
+      { name: "Lê Thu Trang", age: 31, phone: "0918 765 432", service: "Điều trị mụn viêm", time: "14:00", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop" },
+      { name: "Phạm Quỳnh Anh", age: 26, phone: "0976 543 210", service: "Trẻ hóa da", time: "15:30", avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=300&auto=format&fit=crop" },
+      { name: "Hoàng Yến Nhi", age: 28, phone: "0906 555 888", service: "Tư vấn da", time: "16:30", avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=300&auto=format&fit=crop" }
+    ];
+
+    const skinStats = [
+      ["Mụn viêm", "35 (27.3%)", "#ef2f7f"],
+      ["Mụn ẩn", "28 (21.9%)", "#f56fa6"],
+      ["Nám, tàn nhang", "24 (18.8%)", "#f6a1bf"],
+      ["Da nhạy cảm", "20 (15.6%)", "#f8bfd2"],
+      ["Lão hóa", "12 (9.4%)", "#d5aceb"],
+      ["Khác", "9 (7.0%)", "#c6a5e9"]
+    ];
+
+    const menu = [
+      ["Tổng quan", "home"],
+      ["Khách hàng", "users"],
+      ["Phân tích da (AI)", "bot"],
+      ["Liệu trình & Sản phẩm", "clipboard"],
+      ["Lịch hẹn", "calendar"],
+      ["Nhắc lịch tự động", "bell"],
+      ["Báo cáo & Thống kê", "chart"],
+      ["Quy trình vận hành", "workflow", "NEW"],
+      ["Cài đặt hệ thống", "settings"]
+    ];
+
+    const kpis = [
+      ["users", "28", "Khách hôm nay", "12%", "pink"],
+      ["calendar", "12", "Lịch hẹn hôm nay", "8%", "purple"],
+      ["refresh", "7", "Khách tái khám", "16%", "green"],
+      ["dollar", "68.5M", "Doanh thu hôm nay", "21%", "orange"]
+    ];
+
+    const quickActions = [
+      ["Thêm\nkhách hàng", "userPlus", "pink", "Khách hàng"],
+      ["AI phân tích\nda", "bot", "purple", "Phân tích da (AI)"],
+      ["Tạo liệu\ntrình", "clipboard", "purple", "Liệu trình & Sản phẩm"],
+      ["Thêm\nsản phẩm", "flask", "pink", "Liệu trình & Sản phẩm"],
+      ["Nhắc lịch", "bell", "orange", "Nhắc lịch tự động"]
+    ];
+
+    const workflow = [
+      ["Đón tiếp khách hàng", "Tạo hồ sơ khách hàng", "calendar"],
+      ["Phân tích da (AI)", "Chụp ảnh & phân tích", "bot"],
+      ["Tư vấn & Lập liệu trình", "Chọn sản phẩm phù hợp", "file"],
+      ["Chăm sóc & Điều trị", "Thực hiện liệu trình", "stethoscope"],
+      ["Tái khám & Follow-up", "Đánh giá & nhắc lịch", "bell"]
+    ];
+
+    const productCatalog = [
+      { name: "Babé Stop AKN Cleansing Gel", group: "Sữa rửa mặt", price: "Core", match: 96, forSkin: "Da dầu, mụn ẩn, mụn viêm", protocols: ["pd1", "pd2", "pd3"], note: "Làm sạch nền da mụn, dùng sáng và tối trong các phác đồ mụn." },
+      { name: "Babé KCN SPF50", group: "Chống nắng", price: "Bắt buộc", match: 98, forSkin: "Mọi phác đồ", protocols: ["pd1", "pd2", "pd3", "pd4"], note: "Bảo vệ kết quả điều trị; không có KCN sẽ giảm mạnh hiệu quả xử lý thâm và mụn." },
+      { name: "Ekseption Hyaluronic NIACIN Serum", group: "Niacinamide 5%", price: "Kiềm dầu", match: 94, forSkin: "Da dầu, viêm nhẹ, thâm sau mụn", protocols: ["pd1", "pd2", "pd3", "pd4"], note: "Kiềm dầu, giảm viêm, hỗ trợ hàng rào da; dùng sáng hoặc tối tùy phác đồ." },
+      { name: "Ekseption Hyaluronic ZnPHA Serum", group: "BHA + Zinc PCA", price: "Thông thoáng", match: 91, forSkin: "Mụn ẩn, đầu đen, bít tắc", protocols: ["pd1", "pd2", "pd4"], note: "Thông lỗ chân lông, hỗ trợ giảm dầu; dùng buổi tối, không trùng buổi Retinol." },
+      { name: "Ekseption Fusion Retinol 1.0", group: "Retinol", price: "Tái tạo", match: 89, forSkin: "Mụn ẩn, mụn viêm dung nạp tốt", protocols: ["pd1", "pd2", "pd3", "pd4"], note: "Thoa mỏng buổi tối theo lịch; bắt đầu chậm, luôn kèm phục hồi." },
+      { name: "Ekseption HA Deep Filler", group: "Phục hồi ẩm", price: "Bắt buộc tối", match: 95, forSkin: "Mọi phác đồ, da cần phục hồi", protocols: ["pd1", "pd2", "pd3", "pd4"], note: "HA sâu + collagen, dùng cuối routine tối để giảm khô căng và bảo vệ hàng rào da." },
+      { name: "Babé Stop AKN Spot Control Gel", group: "Chấm mụn", price: "Nốt viêm", match: 88, forSkin: "Mụn viêm, nốt mới", protocols: ["pd2", "pd4"], note: "Chấm điểm nốt viêm, không bôi tràn lan toàn mặt." },
+      { name: "Ekseption Hyaluronic TRX Serum", group: "Tranexamic acid", price: "Mờ thâm", match: 90, forSkin: "Mụn nội tiết, thâm sau mụn", protocols: ["pd3"], note: "Mờ thâm, sáng da; dùng toàn mặt theo phác đồ hoặc chấm vùng thâm." },
+      { name: "Revision C+ Correcting Complex 30%", group: "Vitamin C", price: "Sáng da", match: 86, forSkin: "Mụn người lớn nhiều thâm", protocols: ["pd3"], note: "Chống oxy hóa và làm sáng mạnh, dùng khi nền da đã dung nạp tốt." },
+      { name: "Babé Depigment+ Lotion Glow", group: "Làm sáng", price: "Thâm nám", match: 84, forSkin: "Thâm đỏ, nám nhẹ", protocols: ["pd3"], note: "Kết hợp routine sáng cho khách nhiều thâm sau mụn." },
+      { name: "Revision Papaya Enzyme Cleanser", group: "SRM siêu dịu", price: "Phục hồi", match: 93, forSkin: "Da kích ứng, kem trộn, đỏ nóng", protocols: ["pd4"], note: "Làm sạch rất nhẹ trong giai đoạn phục hồi hàng rào." },
+      { name: "Ekseption Hyaluronic B5 Serum", group: "B5 + HA", price: "Phục hồi", match: 97, forSkin: "Hàng rào da yếu, kích ứng", protocols: ["pd4"], note: "Panthenol + HA, ưu tiên tuần 1-2 cho da đỏ, nóng, ngứa." },
+      { name: "Ekseption Hyaluronic Flavonoids Serum", group: "Giảm đỏ", price: "Da nhạy", match: 85, forSkin: "Đỏ da, viêm nhẹ", protocols: ["pd4"], note: "Chấm vùng viêm hoặc dùng toàn mặt khi da đã dung nạp." },
+      { name: "Rejuran Moisture/Dual Effect Ampoule", group: "Phục hồi nâng cấp", price: "Upsell", match: 82, forSkin: "Duy trì, phục hồi sau liệu trình", protocols: ["pd3", "pd4"], note: "Gợi ý sau liệu trình hoặc giai đoạn duy trì để giảm tái phát." }
+    ];
+
+    const protocolCatalog = [
+      {
+        id: "pd1",
+        title: "PĐ1 - Mụn ẩn / đầu đen / đầu trắng",
+        level: "Nhẹ",
+        customer: "Da hỗn hợp-dầu, lỗ chân lông to, sờ gồ ghề, ít hoặc không có mụn viêm, tổng tổn thương dưới 30 nốt.",
+        goal: "Thông lỗ chân lông - giảm dày sừng - kiềm dầu.",
+        am: "Babé Stop AKN Cleansing Gel → Ekseption Hyaluronic NIACIN Serum → Babé Stop AKN Mattifying Moisturiser → Babé KCN SPF50.",
+        pm: "Luân phiên Retinol 1.0, ZnPHA Serum/BHA và đêm nghỉ phục hồi với Ekseption HA Deep Filler.",
+        spa: "1 buổi/2 tuần: lấy nhân mụn chuẩn kỹ thuật + đắp Ekseption White-up Sorbet. Từ tuần 6-8 có thể Pure Skin Peel/Rose de Mer nếu ổn định.",
+        warning: "Tuần 2-3 có thể đẩy mụn ẩn; nếu bùng sau tuần 4 cần bác sĩ tại chi nhánh đánh giá."
+      },
+      {
+        id: "pd2",
+        title: "PĐ2 - Mụn viêm trung bình",
+        level: "Sẩn/mủ 15-50 nốt",
+        customer: "Sẩn đỏ, mụn mủ rải rác má-cằm-trán, kèm mụn ẩn, có thể có thâm.",
+        goal: "Diệt khuẩn + thông lỗ chân lông + giảm viêm cùng lúc.",
+        am: "Babé Stop AKN Cleansing Gel → NIACIN Serum hoặc ZnPHA Serum → Spot Control Gel chấm nốt viêm → Babé KCN SPF50.",
+        pm: "Luân phiên Ekseption Fusion Retinol 1.0, ZnPHA Serum và đêm nghỉ phục hồi với Ekseption HA Deep Filler.",
+        spa: "Tuần 1-4: 1 buổi/tuần lấy nhân mụn + ánh sáng xanh 415nm. Sau 4 tuần giảm còn 1 buổi/2 tuần.",
+        warning: "Sau 6 tuần không cải thiện: chuyển bác sĩ đánh giá, cân nhắc kê đơn kháng sinh hệ thống hoặc Isotretinoin."
+      },
+      {
+        id: "pd3",
+        title: "PĐ3 - Mụn người lớn / nội tiết / nhiều thâm",
+        level: "Nữ trên 25 tuổi",
+        customer: "Mụn vùng cằm-góc hàm, bùng trước kỳ kinh, thâm nhiều, da nhạy cảm.",
+        goal: "Kiểm soát mụn + mờ thâm + chống lão hóa; ưu tiên Tranexamic, Vitamin C, Niacinamide.",
+        am: "Babé Stop AKN Cleansing Gel → Revision C+ Correcting Complex 30% → NIACIN Serum → Babé Depigment+ Lotion Glow → Babé KCN SPF50.",
+        pm: "Luân phiên Ekseption Hyaluronic TRX Serum, Fusion Retinol 1.0 và HA Deep Filler phục hồi.",
+        spa: "2-3 tuần/lần: Mesotherapy F-MELACLEAR hoặc điện di làm sáng; có thể White-up Peptide Peel/Ferulic Peptide Peel.",
+        warning: "Mụn bùng rõ theo chu kỳ kinh: bác sĩ tư vấn khám nội tiết hoặc kê toa Spironolactone."
+      },
+      {
+        id: "pd4",
+        title: "PĐ4 - Da kích ứng / kem trộn / đỏ toàn mặt",
+        level: "Phục hồi trước",
+        customer: "Từng dùng kem trộn/corticoid, da đỏ-ngứa-nóng, mụn nước li ti, hàng rào bảo vệ tổn thương.",
+        goal: "Phục hồi hàng rào bảo vệ trước, điều trị mụn sau; không dùng Retinol/BHA/AHA nồng độ cao trong 3 tuần đầu.",
+        am: "Revision Papaya Enzyme Cleanser → xịt khoáng → Ekseption Hyaluronic B5 Serum → HA Deep Filler → Babé KCN SPF50 khoáng.",
+        pm: "Revision Papaya Enzyme Cleanser → B5 Serum → HA Deep Filler dày. Tuần 3-4 thêm Flavonoids/NIACIN nếu da dung nạp.",
+        spa: "Không peel, không lăn kim, không laser đến khi hết đỏ-ngứa-nóng. Chỉ phục hồi nhẹ/mặt nạ Rejuran 1-2 lần/tuần.",
+        warning: "Chuyển bác sĩ ngay nếu ngứa lan toàn mặt, mụn mủ bùng nhanh, sốt hoặc nghi viêm da/vi nấm."
+      }
+    ];
+
+    let active = "Tổng quan";
+    let searchTerm = "";
+    let uploadedImage = "";
+    let analysisReady = false;
+    let selectedCustomerName = customers[0].name;
+    let selectedProtocolId = "pd2";
+
+    function iconSvg(name) {
+      const paths = {
+        home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/>',
+        users: '<path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        userPlus: '<path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M19 8v6"/><path d="M16 11h6"/>',
+        bot: '<rect x="4" y="8" width="16" height="12" rx="4"/><path d="M12 4v4"/><path d="M8 12h.01"/><path d="M16 12h.01"/><path d="M9 16h6"/>',
+        clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h3"/>',
+        calendar: '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>',
+        bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
+        chart: '<path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="7" width="3" height="9" rx="1"/><rect x="17" y="4" width="3" height="12" rx="1"/>',
+        workflow: '<rect x="3" y="4" width="6" height="6" rx="2"/><rect x="15" y="4" width="6" height="6" rx="2"/><rect x="9" y="16" width="6" height="6" rx="2"/><path d="M9 7h6"/><path d="M12 10v6"/>',
+        settings: '<path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.05.05a2.1 2.1 0 0 1-2.97 2.97l-.05-.05a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.09 1.65V21a2.1 2.1 0 0 1-4.2 0v-.08a1.8 1.8 0 0 0-1.09-1.65 1.8 1.8 0 0 0-1.98.36l-.05.05a2.1 2.1 0 0 1-2.97-2.97l.05-.05a1.8 1.8 0 0 0 .36-1.98 1.8 1.8 0 0 0-1.65-1.09H3a2.1 2.1 0 0 1 0-4.2h.08a1.8 1.8 0 0 0 1.65-1.09 1.8 1.8 0 0 0-.36-1.98l-.05-.05A2.1 2.1 0 0 1 7.29 3.3l.05.05a1.8 1.8 0 0 0 1.98.36A1.8 1.8 0 0 0 10.4 2.1V2a2.1 2.1 0 0 1 4.2 0v.08a1.8 1.8 0 0 0 1.09 1.65 1.8 1.8 0 0 0 1.98-.36l.05-.05a2.1 2.1 0 0 1 2.97 2.97l-.05.05a1.8 1.8 0 0 0-.36 1.98c.26.67.91 1.09 1.65 1.09H22a2.1 2.1 0 0 1 0 4.2h-.08A1.8 1.8 0 0 0 19.4 15Z"/>',
+        refresh: '<path d="M21 12a9 9 0 0 1-15.5 6.2"/><path d="M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18.5 2.5v3.3h-3.3"/><path d="M5.5 21.5v-3.3h3.3"/>',
+        dollar: '<path d="M12 2v20"/><path d="M17 6.5c-1.3-1-3-1.5-5-1.5-3 0-5 1.4-5 3.5s2 3 5 3.5 5 1.4 5 3.5S15 19 12 19c-2.1 0-4-.6-5.5-1.8"/>',
+        flask: '<path d="M9 3h6"/><path d="M10 3v5l-5.6 9.3A2.4 2.4 0 0 0 6.5 21h11a2.4 2.4 0 0 0 2.1-3.7L14 8V3"/><path d="M7 16h10"/>',
+        file: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/>',
+        stethoscope: '<path d="M6 3v5a4 4 0 0 0 8 0V3"/><path d="M10 12v3a5 5 0 0 0 10 0v-1"/><circle cx="20" cy="10" r="2"/>',
+        menu: '<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>',
+        search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+        message: '<path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/>',
+        plus: '<path d="M12 5v14"/><path d="M5 12h14"/>'
+      };
+      return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.home}</svg>`;
+    }
+
+    function badge(text) {
+      return `<span class="badge">${text}</span>`;
+    }
+
+    function renderNav() {
+      document.getElementById("nav").innerHTML = menu.map(([label, icon, tag]) => `
+        <button class="${active === label ? "active" : ""}" data-nav="${label}">
+          <span class="icon">${iconSvg(icon)}</span>
+          <span style="flex:1">${label}</span>
+          ${tag ? badge(tag) : ""}
+        </button>
+      `).join("");
+    }
+
+    function renderKpis() {
+      document.getElementById("kpis").innerHTML = kpis.map(([icon, value, label, change, tone]) => `
+        <article class="card kpi-card">
+          <div class="kpi-main">
+            <div class="kpi-icon tone-${tone}">${iconSvg(icon)}</div>
+            <div>
+              <div class="kpi-value">${value}</div>
+              <div class="kpi-label">${label}</div>
+            </div>
+          </div>
+          <div class="change">
+            <b class="tone-${tone}">↑ ${change}</b>
+            <span>so với hôm qua</span>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderSkinLegend() {
+      document.getElementById("skinLegend").innerHTML = skinStats.map(([label, value, color]) => `
+        <div class="legend-row">
+          <span><i class="swatch" style="background:${color}"></i>${label}</span>
+          <span>${value}</span>
+        </div>
+      `).join("");
+    }
+
+    function filteredCustomers() {
+      const term = searchTerm.trim().toLowerCase();
+      if (!term) return customers;
+      return customers.filter(customer => `${customer.name} ${customer.phone} ${customer.service}`.toLowerCase().includes(term));
+    }
+
+    function renderCustomers() {
+      const filtered = filteredCustomers();
+      document.getElementById("customerList").innerHTML = filtered.slice(0, 4).map(customer => `
+        <div class="customer-item">
+          <img class="avatar" src="${customer.avatar}" alt="${customer.name}" />
+          <div style="min-width:0;flex:1">
+            <b>${customer.name}</b>
+            <small>${customer.age} tuổi · ${customer.phone}</small>
+          </div>
+          <button class="profile-btn">Xem hồ sơ</button>
+        </div>
+      `).join("") || `<p style="color:var(--muted);line-height:1.6">Không tìm thấy khách hàng phù hợp.</p>`;
+    }
+
+    function renderQuickActions() {
+      document.getElementById("quickActions").innerHTML = quickActions.map(([label, icon, tone, target]) => `
+        <button class="quick-action" data-nav-target="${target}">
+          <span class="qa-icon tone-${tone}">${iconSvg(icon)}</span>
+          <span>${label}</span>
+        </button>
+      `).join("");
+    }
+
+    function renderWorkflow() {
+      document.getElementById("workflow").innerHTML = workflow.map(([title, desc, icon], index) => `
+        <div class="workflow-step">
+          <div class="wf-icon">${iconSvg(icon)}</div>
+          <div class="wf-num">${index + 1}</div>
+          <div class="wf-title">${title}</div>
+          <div class="wf-desc">${desc}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderAppointments() {
+      document.getElementById("appointments").innerHTML = customers.map(customer => `
+        <div class="appointment-item">
+          <div class="time"><b>${customer.time}</b><small>24/05</small></div>
+          <img class="avatar" src="${customer.avatar}" alt="${customer.name}" />
+          <div style="min-width:0;flex:1">
+            <b>${customer.name}</b>
+            <small>${customer.service}</small>
+          </div>
+          ${badge("Sắp tới")}
+        </div>
+      `).join("");
+    }
+
+    function productCards(products = productCatalog.slice(0, 4)) {
+      return products.map(product => `
+        <article class="product-card">
+          <div class="product-top">
+            <div>
+              <h3>${product.name}</h3>
+              <p>${product.group} · ${product.price}</p>
+            </div>
+            ${badge(product.match + "%")}
+          </div>
+          <p><b>Phù hợp:</b> ${product.forSkin}</p>
+          <p>${product.note}</p>
+        </article>
+      `).join("");
+    }
+
+    function currentProtocol() {
+      return protocolCatalog.find(protocol => protocol.id === selectedProtocolId) || protocolCatalog[1];
+    }
+
+    function productsForProtocol(protocolId) {
+      return productCatalog.filter(product => product.protocols.includes(protocolId));
+    }
+
+    function protocolCard(protocol) {
+      return `
+        <article class="product-card" style="background:#fff7fa">
+          <div class="product-top">
+            <div>
+              <h3>${protocol.title}</h3>
+              <p>${protocol.level}</p>
+            </div>
+            ${badge("Phác đồ")}
+          </div>
+          <p><b>Khách phù hợp:</b> ${protocol.customer}</p>
+          <p><b>Mục tiêu:</b> ${protocol.goal}</p>
+          <div class="routine-list">
+            <div class="routine-row"><b>Sáng</b><span>${protocol.am}</span></div>
+            <div class="routine-row"><b>Tối</b><span>${protocol.pm}</span></div>
+            <div class="routine-row"><b>Spa</b><span>${protocol.spa}</span></div>
+            <div class="routine-row"><b>Lưu ý</b><span>${protocol.warning}</span></div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderAiModule() {
+      const selectedCustomer = customers.find(customer => customer.name === selectedCustomerName) || customers[0];
+      const protocol = currentProtocol();
+      const recommended = analysisReady ? productsForProtocol(protocol.id).slice(0, 6) : productCatalog.slice(0, 4);
+      return `
+        <div class="module-head">
+          <div>
+            <h1>Phân tích da (AI)</h1>
+            <p>Tải ảnh da lên để hệ thống mô phỏng phân tích, tổng hợp tình trạng và chọn sản phẩm Lady's House phù hợp từ danh mục công ty đang bán.</p>
+          </div>
+          <button class="date-btn">Bản demo tư vấn tại quầy</button>
+        </div>
+        <div class="ai-grid">
+          <section class="card">
+            <div class="card-head"><h2>Dữ liệu đầu vào</h2>${badge("AI hỗ trợ chuyên viên")}</div>
+            <div class="field">
+              <label>Khách hàng</label>
+              <select id="aiCustomer">
+                ${customers.map(customer => `<option ${customer.name === selectedCustomer.name ? "selected" : ""}>${customer.name}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field">
+              <label>Ghi chú tư vấn</label>
+              <textarea id="aiNote">Khách có mụn viêm vùng má, thâm đỏ sau mụn, dễ kích ứng khi dùng treatment mạnh.</textarea>
+            </div>
+            <div class="field">
+              <label>Phác đồ muốn mô phỏng</label>
+              <select id="protocolSelect">
+                ${protocolCatalog.map(item => `<option value="${item.id}" ${item.id === protocol.id ? "selected" : ""}>${item.title}</option>`).join("")}
+              </select>
+            </div>
+            <label class="upload-area ${uploadedImage ? "has-image" : ""}" for="skinUpload">
+              ${uploadedImage ? `<img src="${uploadedImage}" alt="Ảnh da đã tải lên" />` : `<div class="upload-copy"><span class="big-plus">+</span><b>Tải ảnh da khách hàng</b><p>Ảnh chính diện hoặc cận vùng mụn/nám. File chỉ dùng để mô phỏng trên máy này.</p></div>`}
+            </label>
+            <input id="skinUpload" type="file" accept="image/*" hidden />
+            <div class="row" style="margin-top:14px;flex-wrap:wrap">
+              <button class="primary-btn" id="runAnalysis">${uploadedImage ? "Chạy phân tích AI" : "Chọn ảnh rồi phân tích"}</button>
+              <button class="secondary-btn" id="useSampleImage">Dùng ảnh mẫu</button>
+              <button class="secondary-btn" id="clearImage">Xóa ảnh</button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h2>Kết quả tổng hợp</h2>
+              ${badge(analysisReady ? "Đã có kết quả" : "Chưa chạy AI")}
+            </div>
+            <div class="analysis-summary">
+              <div class="summary-box"><small>Loại da dự đoán</small><b>${analysisReady ? "Da dầu nhạy cảm" : "Đang chờ ảnh"}</b></div>
+              <div class="summary-box"><small>Vấn đề chính</small><b>${analysisReady ? protocol.title.replace(/^PĐ\\d - /, "") : "Chưa phân tích"}</b></div>
+              <div class="summary-box"><small>Mức độ ưu tiên</small><b>${analysisReady ? protocol.level : "Cần dữ liệu"}</b></div>
+              <div class="summary-box"><small>Điểm routine</small><b>${analysisReady ? "82/100" : "--"}</b></div>
+            </div>
+            <div class="card" style="box-shadow:none;background:#fff7fa;margin-bottom:16px">
+              <h2>Nhận định tư vấn</h2>
+              <p style="margin:10px 0 0;color:var(--muted);line-height:1.65">${analysisReady ? `AI demo đang map khách vào ${protocol.title}. ${protocol.goal} Tư vấn viên cần kiểm tra chống chỉ định, hỏi tiền sử dùng kem trộn/corticoid và để chuyên viên/bác sĩ duyệt trước khi gửi routine.` : "Chọn ảnh hoặc dùng ảnh mẫu, sau đó bấm Chạy phân tích AI để hiển thị nhận định và routine gợi ý."}</p>
+            </div>
+            <h2 style="margin-bottom:12px">Phác đồ gợi ý từ tài liệu công ty</h2>
+            ${analysisReady ? protocolCard(protocol) : ""}
+            <h2 style="margin:18px 0 12px">Sản phẩm gợi ý để chốt tư vấn</h2>
+            <div class="recommend-grid">${productCards(recommended)}</div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderCustomersModule() {
+      return `
+        <div class="module-head"><div><h1>Khách hàng</h1><p>Quản lý hồ sơ, tình trạng da, lịch hẹn và gợi ý chăm sóc sau tư vấn.</p></div>${badge(customers.length + " hồ sơ demo")}</div>
+        <section class="card">
+          <table class="data-table">
+            <thead><tr><th>Khách hàng</th><th>Tuổi</th><th>SĐT</th><th>Dịch vụ</th><th>Lịch hôm nay</th></tr></thead>
+            <tbody>${customers.map(customer => `<tr><td><b>${customer.name}</b></td><td>${customer.age}</td><td>${customer.phone}</td><td>${customer.service}</td><td>${customer.time}</td></tr>`).join("")}</tbody>
+          </table>
+        </section>
+      `;
+    }
+
+    function renderProductsModule() {
+      return `
+        <div class="module-head"><div><h1>Liệu trình & Sản phẩm</h1><p>Đã thêm phác đồ cơ bản từ tài liệu đào tạo Lady's House: 4 routine mụn, sản phẩm map theo hoạt chất, peel tại spa và checklist an toàn.</p></div><button class="primary-btn">+ Thêm sản phẩm</button></div>
+        <div class="recommend-grid" style="margin-bottom:18px">${protocolCatalog.map(protocol => protocolCard(protocol)).join("")}</div>
+        <div class="recommend-grid">${productCards(productCatalog)}</div>
+      `;
+    }
+
+    function renderScheduleModule() {
+      return `
+        <div class="module-head"><div><h1>${active}</h1><p>Theo dõi lịch hẹn, nhắc khách tự động và giao việc follow-up cho nhân viên.</p></div><button class="primary-btn">+ Tạo lịch hẹn</button></div>
+        <div class="simple-grid">${customers.map(customer => `<article class="card"><div class="time" style="margin-bottom:14px"><b>${customer.time}</b><small>24/05</small></div><h2>${customer.name}</h2><p style="color:var(--muted);line-height:1.6">${customer.service}<br>${customer.phone}</p>${badge("Sắp tới")}</article>`).join("")}</div>
+      `;
+    }
+
+    function renderReportModule() {
+      return `
+        <div class="module-head"><div><h1>${active}</h1><p>Bản demo tổng hợp các chỉ số doanh thu, nhóm da phổ biến, tỷ lệ tái khám và hiệu quả sản phẩm.</p></div>${badge("Demo data")}</div>
+        <div class="simple-grid">
+          <article class="card"><h2>Doanh thu tháng</h2><p class="kpi-value" style="margin-top:18px">1.24B</p><p style="color:var(--green)">Tăng 18% so với tháng trước</p></article>
+          <article class="card"><h2>Tỷ lệ tái khám</h2><p class="kpi-value" style="margin-top:18px">64%</p><p style="color:var(--pink)">Mục tiêu tháng: 70%</p></article>
+          <article class="card"><h2>Sản phẩm bán chạy</h2><p style="margin-top:18px;color:var(--muted);line-height:1.7">B5 Recovery Serum<br>Oil-Control SPF50+<br>Ceramide Repair Cream</p></article>
+        </div>
+      `;
+    }
+
+    function renderWorkflowModule() {
+      return `
+        <div class="module-head"><div><h1>Quy trình vận hành</h1><p>Luồng chuẩn từ tiếp nhận khách đến phân tích ảnh, tư vấn sản phẩm và chăm sóc sau liệu trình.</p></div>${badge("NEW")}</div>
+        <section class="card"><div class="workflow">${workflow.map(([title, desc, icon], index) => `<div class="workflow-step"><div class="wf-icon">${iconSvg(icon)}</div><div class="wf-num">${index + 1}</div><div class="wf-title">${title}</div><div class="wf-desc">${desc}</div></div>`).join("")}</div></section>
+      `;
+    }
+
+    function renderSettingsModule() {
+      return `
+        <div class="module-head"><div><h1>Cài đặt hệ thống</h1><p>Cấu hình phân quyền, danh mục sản phẩm, mẫu tin nhắn và quy tắc AI chỉ tư vấn theo hàng công ty đang bán.</p></div>${badge("Admin")}</div>
+        <div class="simple-grid">
+          <article class="card"><h2>Phân quyền</h2><p style="margin-top:12px;color:var(--muted);line-height:1.7">Admin chi nhánh<br>Chuyên viên tư vấn<br>Lễ tân tiếp nhận</p></article>
+          <article class="card"><h2>Quy tắc AI</h2><p style="margin-top:12px;color:var(--muted);line-height:1.7">Không chẩn đoán y khoa<br>Không bịa sản phẩm ngoài catalog<br>Luôn yêu cầu chuyên viên duyệt</p></article>
+          <article class="card"><h2>Tích hợp</h2><p style="margin-top:12px;color:var(--muted);line-height:1.7">Zalo OA/SMS reminder<br>Lưu ảnh bảo mật<br>Xuất báo cáo doanh thu</p></article>
+        </div>
+      `;
+    }
+
+    function renderModule() {
+      if (active === "Phân tích da (AI)") return renderAiModule();
+      if (active === "Khách hàng") return renderCustomersModule();
+      if (active === "Liệu trình & Sản phẩm") return renderProductsModule();
+      if (active === "Lịch hẹn" || active === "Nhắc lịch tự động") return renderScheduleModule();
+      if (active === "Báo cáo & Thống kê") return renderReportModule();
+      if (active === "Quy trình vận hành") return renderWorkflowModule();
+      if (active === "Cài đặt hệ thống") return renderSettingsModule();
+      return "";
+    }
+
+    function renderView() {
+      const overview = document.getElementById("overviewView");
+      const moduleView = document.getElementById("moduleView");
+      const placeholder = document.getElementById("placeholderView");
+      const isOverview = active === "Tổng quan";
+      overview.style.display = isOverview ? "block" : "none";
+      const moduleHtml = isOverview ? "" : renderModule();
+      moduleView.innerHTML = moduleHtml;
+      moduleView.classList.toggle("active", !!moduleHtml && !isOverview);
+      placeholder.classList.toggle("active", !isOverview && !moduleHtml);
+      if (!isOverview && !moduleHtml) {
+        const found = menu.find(([label]) => label === active);
+        document.getElementById("placeholderIcon").textContent = found ? found[1] : "H";
+        document.getElementById("placeholderTitle").textContent = active;
+        document.getElementById("placeholderText").textContent = `${active} là module trong hệ thống CRM + AI Skin Assistant. Bản demo này đang tập trung trình bày dashboard tổng quan và cấu trúc vận hành chính.`;
+      }
+    }
+
+    function renderAll() {
+      document.getElementById("menuIconButton").innerHTML = iconSvg("menu");
+      document.getElementById("searchIcon").innerHTML = iconSvg("search");
+      document.getElementById("bellIconButton").innerHTML = `${iconSvg("bell")}<span class="dot">8</span>`;
+      document.getElementById("messageIconButton").innerHTML = `${iconSvg("message")}<span class="dot">3</span>`;
+      document.getElementById("dateIcon").innerHTML = iconSvg("calendar");
+      renderNav();
+      renderKpis();
+      renderSkinLegend();
+      renderCustomers();
+      renderQuickActions();
+      renderWorkflow();
+      renderAppointments();
+      renderView();
+    }
+
+    document.addEventListener("click", event => {
+      const navButton = event.target.closest("[data-nav]");
+      const targetButton = event.target.closest("[data-nav-target]");
+      const target = navButton?.dataset.nav || targetButton?.dataset.navTarget;
+      if (target) {
+        active = target;
+        renderAll();
+        return;
+      }
+
+      if (event.target.closest("#runAnalysis")) {
+        if (!uploadedImage) {
+          uploadedImage = sampleSkinImage();
+        }
+        analysisReady = true;
+        renderView();
+        return;
+      }
+
+      if (event.target.closest("#useSampleImage")) {
+        uploadedImage = sampleSkinImage();
+        analysisReady = true;
+        renderView();
+        return;
+      }
+
+      if (event.target.closest("#clearImage")) {
+        uploadedImage = "";
+        analysisReady = false;
+        renderView();
+      }
+    });
+
+    document.addEventListener("change", event => {
+      if (event.target.id === "skinUpload") {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          uploadedImage = reader.result;
+          analysisReady = true;
+          renderView();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      if (event.target.id === "aiCustomer") {
+        selectedCustomerName = event.target.value;
+      }
+
+      if (event.target.id === "protocolSelect") {
+        selectedProtocolId = event.target.value;
+        analysisReady = true;
+        renderView();
+      }
+    });
+
+    document.getElementById("searchInput").addEventListener("input", event => {
+      searchTerm = event.target.value;
+      renderCustomers();
+    });
+
+    function sampleSkinImage() {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620">
+          <defs>
+            <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#fff1f6"/>
+              <stop offset="1" stop-color="#f8f7fb"/>
+            </linearGradient>
+            <linearGradient id="skin" x1="0" x2="1">
+              <stop offset="0" stop-color="#f2c5b3"/>
+              <stop offset="1" stop-color="#ffd9c8"/>
+            </linearGradient>
+          </defs>
+          <rect width="900" height="620" fill="url(#bg)"/>
+          <ellipse cx="450" cy="338" rx="190" ry="238" fill="url(#skin)"/>
+          <path d="M281 270c25-132 115-185 211-174 89 10 140 68 154 176-71-46-135-58-205-38-55 16-103 25-160 36z" fill="#2b2025"/>
+          <ellipse cx="374" cy="330" rx="20" ry="13" fill="#3d2a2b"/>
+          <ellipse cx="526" cy="330" rx="20" ry="13" fill="#3d2a2b"/>
+          <path d="M424 430c37 20 76 20 112 0" fill="none" stroke="#9f5f62" stroke-width="10" stroke-linecap="round"/>
+          <path d="M453 360c-9 32-17 58 13 62" fill="none" stroke="#c98d83" stroke-width="8" stroke-linecap="round"/>
+          <g fill="#e8557e" opacity=".82">
+            <circle cx="340" cy="396" r="10"/><circle cx="362" cy="420" r="6"/><circle cx="556" cy="392" r="8"/>
+            <circle cx="579" cy="421" r="6"/><circle cx="521" cy="461" r="5"/><circle cx="389" cy="462" r="5"/>
+          </g>
+          <g fill="#c45064" opacity=".32">
+            <circle cx="329" cy="384" r="25"/><circle cx="563" cy="402" r="28"/><circle cx="382" cy="443" r="18"/>
+          </g>
+          <rect x="48" y="46" width="330" height="82" rx="22" fill="#fff" opacity=".86"/>
+          <text x="78" y="83" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#ef2f7f">Ảnh mẫu phân tích da</text>
+          <text x="78" y="112" font-family="Arial, sans-serif" font-size="18" fill="#716a73">Mô phỏng upload tại quầy tư vấn</text>
+        </svg>`;
+      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+    }
+
+    console.assert(quickActions.length === 5, "Quick actions should include 5 items.");
+    console.assert(customers.length >= 5, "Dashboard should show at least 5 sample customers.");
+    console.assert(skinStats.length === 6, "Skin statistics should include 6 categories.");
+
+    renderAll();
+  </script>
+</body>
+</html>
