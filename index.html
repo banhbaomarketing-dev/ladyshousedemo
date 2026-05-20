@@ -1477,6 +1477,18 @@
     let analysisReady = false;
     let selectedCustomerName = customers[0].name;
     let selectedProtocolId = "pd2";
+    let analysisMode = "manual";
+    let analysisMetrics = {
+      skinType: "Da dầu nhạy cảm",
+      concern: "Mụn viêm + thâm đỏ",
+      priority: "Sẩn/mủ 15-50 nốt",
+      score: 82,
+      confidence: 91,
+      redness: 44,
+      brightness: 68,
+      texture: 36,
+      signal: "Mô phỏng theo ảnh mẫu"
+    };
 
     function iconSvg(name) {
       const paths = {
@@ -1638,6 +1650,109 @@
       return productCatalog.filter(product => product.protocols.includes(protocolId));
     }
 
+    function updateAnalysisFromHeuristics(metrics, source = "Ảnh tải lên") {
+      const red = metrics.redness;
+      const bright = metrics.brightness;
+      const texture = metrics.texture;
+      if (red >= 58 && bright >= 64) {
+        selectedProtocolId = "pd4";
+        analysisMetrics = {
+          skinType: "Da nhạy cảm / hàng rào yếu",
+          concern: "Đỏ da, kích ứng, cần phục hồi",
+          priority: "Phục hồi trước treatment",
+          score: 74,
+          confidence: 88,
+          redness: red,
+          brightness: bright,
+          texture,
+          signal: source
+        };
+      } else if (texture >= 48 && red >= 40) {
+        selectedProtocolId = "pd2";
+        analysisMetrics = {
+          skinType: "Da dầu mụn viêm",
+          concern: "Mụn viêm trung bình",
+          priority: "Diệt khuẩn + thông thoáng",
+          score: 82,
+          confidence: 91,
+          redness: red,
+          brightness: bright,
+          texture,
+          signal: source
+        };
+      } else if (bright <= 52 && red >= 30) {
+        selectedProtocolId = "pd3";
+        analysisMetrics = {
+          skinType: "Da sau mụn nhiều thâm",
+          concern: "Mụn người lớn / thâm sau mụn",
+          priority: "Kiểm soát mụn + mờ thâm",
+          score: 79,
+          confidence: 86,
+          redness: red,
+          brightness: bright,
+          texture,
+          signal: source
+        };
+      } else {
+        selectedProtocolId = "pd1";
+        analysisMetrics = {
+          skinType: "Da hỗn hợp thiên dầu",
+          concern: "Mụn ẩn / bít tắc / đầu đen",
+          priority: "Thông lỗ chân lông",
+          score: 85,
+          confidence: 89,
+          redness: red,
+          brightness: bright,
+          texture,
+          signal: source
+        };
+      }
+      analysisMode = "auto";
+      analysisReady = true;
+    }
+
+    function analyzeImageDataUrl(dataUrl, source = "Ảnh tải lên") {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const size = 96;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d", { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0, size, size);
+          const data = ctx.getImageData(0, 0, size, size).data;
+          let total = 0, redSignal = 0, brightSignal = 0, textureSignal = 0;
+          let prevLum = null;
+          for (let i = 0; i < data.length; i += 4) {
+            const alpha = data[i + 3];
+            if (alpha < 20) continue;
+            const r = data[i], g = data[i + 1], b = data[i + 2];
+            const lum = (0.299 * r + 0.587 * g + 0.114 * b);
+            const saturation = Math.max(r, g, b) - Math.min(r, g, b);
+            brightSignal += lum / 255;
+            redSignal += Math.max(0, r - (g + b) / 2) / 120;
+            if (prevLum !== null) textureSignal += Math.abs(lum - prevLum) / 255;
+            prevLum = lum;
+            if (saturation > 15 && lum > 35 && lum < 245) total++;
+          }
+          const safeTotal = Math.max(total, 1);
+          const metrics = {
+            redness: Math.max(18, Math.min(92, Math.round((redSignal / safeTotal) * 100))),
+            brightness: Math.max(25, Math.min(92, Math.round((brightSignal / safeTotal) * 100))),
+            texture: Math.max(20, Math.min(88, Math.round((textureSignal / safeTotal) * 520)))
+          };
+          updateAnalysisFromHeuristics(metrics, source);
+          resolve(metrics);
+        };
+        img.onerror = () => {
+          updateAnalysisFromHeuristics({ redness: 44, brightness: 68, texture: 42 }, source);
+          resolve(null);
+        };
+        img.src = dataUrl;
+      });
+    }
+
     function protocolCard(protocol) {
       return `
         <article class="product-card" style="background:#fff7fa">
@@ -1686,7 +1801,7 @@
               <textarea id="aiNote">Khách có mụn viêm vùng má, thâm đỏ sau mụn, dễ kích ứng khi dùng treatment mạnh.</textarea>
             </div>
             <div class="field">
-              <label>Phác đồ muốn mô phỏng</label>
+              <label>Phác đồ AI đang chọn</label>
               <select id="protocolSelect">
                 ${protocolCatalog.map(item => `<option value="${item.id}" ${item.id === protocol.id ? "selected" : ""}>${item.title}</option>`).join("")}
               </select>
@@ -1696,7 +1811,7 @@
             </label>
             <input id="skinUpload" type="file" accept="image/*" hidden />
             <div class="row" style="margin-top:14px;flex-wrap:wrap">
-              <button class="primary-btn" id="runAnalysis">${uploadedImage ? "Chạy phân tích AI" : "Chọn ảnh rồi phân tích"}</button>
+              <button class="primary-btn" id="runAnalysis">${uploadedImage ? "Phân tích lại ảnh" : "Chọn ảnh để AI tự phân tích"}</button>
               <button class="secondary-btn" id="useSampleImage">Dùng ảnh mẫu</button>
               <button class="secondary-btn" id="clearImage">Xóa ảnh</button>
             </div>
@@ -1705,17 +1820,23 @@
           <section class="card">
             <div class="card-head">
               <h2>Kết quả tổng hợp</h2>
-              ${badge(analysisReady ? "Đã có kết quả" : "Chưa chạy AI")}
+              ${badge(analysisReady ? (analysisMode === "auto" ? "AI tự phân tích" : "Đã có kết quả") : "Chưa chạy AI")}
             </div>
             <div class="analysis-summary">
-              <div class="summary-box"><small>Loại da dự đoán</small><b>${analysisReady ? "Da dầu nhạy cảm" : "Đang chờ ảnh"}</b></div>
-              <div class="summary-box"><small>Vấn đề chính</small><b>${analysisReady ? protocol.title.replace(/^PĐ\\d - /, "") : "Chưa phân tích"}</b></div>
-              <div class="summary-box"><small>Mức độ ưu tiên</small><b>${analysisReady ? protocol.level : "Cần dữ liệu"}</b></div>
-              <div class="summary-box"><small>Điểm routine</small><b>${analysisReady ? "82/100" : "--"}</b></div>
+              <div class="summary-box"><small>Loại da dự đoán</small><b>${analysisReady ? analysisMetrics.skinType : "Đang chờ ảnh"}</b></div>
+              <div class="summary-box"><small>Vấn đề chính</small><b>${analysisReady ? analysisMetrics.concern : "Chưa phân tích"}</b></div>
+              <div class="summary-box"><small>Mức độ ưu tiên</small><b>${analysisReady ? analysisMetrics.priority : "Cần dữ liệu"}</b></div>
+              <div class="summary-box"><small>Điểm routine</small><b>${analysisReady ? analysisMetrics.score + "/100" : "--"}</b></div>
             </div>
+            ${analysisReady ? `<div class="analysis-summary">
+              <div class="summary-box"><small>Tín hiệu đỏ/viêm</small><b>${analysisMetrics.redness}/100</b></div>
+              <div class="summary-box"><small>Độ sáng nền da</small><b>${analysisMetrics.brightness}/100</b></div>
+              <div class="summary-box"><small>Độ không đều bề mặt</small><b>${analysisMetrics.texture}/100</b></div>
+              <div class="summary-box"><small>Độ tin cậy demo</small><b>${analysisMetrics.confidence}%</b></div>
+            </div>` : ""}
             <div class="card" style="box-shadow:none;background:#fff7fa;margin-bottom:16px">
               <h2>Nhận định tư vấn</h2>
-              <p style="margin:10px 0 0;color:var(--muted);line-height:1.65">${analysisReady ? `AI demo đang map khách vào ${protocol.title}. ${protocol.goal} Tư vấn viên cần kiểm tra chống chỉ định, hỏi tiền sử dùng kem trộn/corticoid và để chuyên viên/bác sĩ duyệt trước khi gửi routine.` : "Chọn ảnh hoặc dùng ảnh mẫu, sau đó bấm Chạy phân tích AI để hiển thị nhận định và routine gợi ý."}</p>
+              <p style="margin:10px 0 0;color:var(--muted);line-height:1.65">${analysisReady ? `AI demo đã đọc ${analysisMetrics.signal}, tự map khách vào ${protocol.title}. ${protocol.goal} Tư vấn viên cần kiểm tra chống chỉ định, hỏi tiền sử dùng kem trộn/corticoid và để chuyên viên/bác sĩ duyệt trước khi gửi routine.` : "Chọn ảnh hoặc dùng ảnh mẫu, hệ thống sẽ tự phân tích nền da và tự chọn phác đồ/sản phẩm phù hợp."}</p>
             </div>
             <h2 style="margin-bottom:12px">Phác đồ gợi ý từ tài liệu công ty</h2>
             ${analysisReady ? protocolCard(protocol) : ""}
@@ -1842,15 +1963,13 @@
         if (!uploadedImage) {
           uploadedImage = sampleSkinImage();
         }
-        analysisReady = true;
-        renderView();
+        analyzeImageDataUrl(uploadedImage, uploadedImage.startsWith("data:image/svg") ? "ảnh mẫu demo" : "ảnh tải lên").then(() => renderView());
         return;
       }
 
       if (event.target.closest("#useSampleImage")) {
         uploadedImage = sampleSkinImage();
-        analysisReady = true;
-        renderView();
+        analyzeImageDataUrl(uploadedImage, "ảnh mẫu demo").then(() => renderView());
         return;
       }
 
@@ -1868,8 +1987,7 @@
         const reader = new FileReader();
         reader.onload = () => {
           uploadedImage = reader.result;
-          analysisReady = true;
-          renderView();
+          analyzeImageDataUrl(uploadedImage, file.name || "ảnh tải lên").then(() => renderView());
         };
         reader.readAsDataURL(file);
       }
@@ -1880,6 +1998,14 @@
 
       if (event.target.id === "protocolSelect") {
         selectedProtocolId = event.target.value;
+        analysisMode = "manual";
+        const protocol = currentProtocol();
+        analysisMetrics = {
+          ...analysisMetrics,
+          concern: protocol.title.replace(/^PĐ\d - /, ""),
+          priority: protocol.level,
+          signal: "chọn phác đồ thủ công"
+        };
         analysisReady = true;
         renderView();
       }
